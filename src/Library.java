@@ -7,7 +7,9 @@ Joseph Eddy
 Brian Castro
 */
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Scanner;
 
 public class Library {
@@ -22,15 +24,37 @@ public class Library {
         // test code
         System.out.printf("Name: %s, Age: %s, Username: %s, Password: %s", user.name, user.age, user.username, user.password);
         if (user instanceof Student) {
+            // user is a student
+            // update personal info
+
+            // browse books
+            //
+
+            // borrow books
+            //
+
+            // return books
+
+            // check borrows
+
             System.out.print("\nTrue Student");
         } else if (user instanceof Librarian) {
+            // user is a librarian
+
+            // update student information
+                // student name
+                // student
+
+            // check library transaction history
+            // add book to library
+
             System.out.print("\nTrue Librarian");
         } else { System.out.print("False"); }
 
     }
 
     public static User loginMenu(User[] users) {
-        int choice = validateIntInput("Login: 1\nCreate Account: 2\nEnter choice: ");
+        int choice = validateIntInput("Login: 1\nCreate Student Account: 2\nEnter choice: ");
 
         if (choice == 1) {
             return login(users);
@@ -139,11 +163,11 @@ class Librarian extends User {
         super(name, age, username, password);
     }
 
-    protected void enableUser() {
+    protected void enableUser(Student student) {
 
     }
 
-    protected void disableUser() {
+    protected void disableUser(Student student) {
 
     }
 }
@@ -158,7 +182,8 @@ class Student extends User {
         SENIOR
     }
 
-    public Status status;
+    public boolean enabled;
+    public Status status; // year grade status of student
     public Date dateCreated; // date account was created
 
     public Student(String name, int age, String username, String password) {
@@ -187,10 +212,11 @@ class Student extends User {
 }
 
 //Brian
+// may not be using this
 class Transaction {
     protected int id;
-    public String details;
-    // date: String
+    public Date returned;
+
     public Borrowing borrowing;
 
     public void update() {
@@ -200,37 +226,68 @@ class Transaction {
 
 //Joe
 class Borrowing {
-    protected int id;
-    // bookname: String
+    private static int count = 0;
+    public int id;
     public Book[] books;
-    // borrower: String
     public Student borrower;
-    // dateborrowed: String
-    public Date dateBorrowed;
-    // dateDue String
-    public Date dateDue;
+    public Calendar dateBorrowed;
+    public Calendar dateDue;
+    public Calendar dateReturned;
+    public Boolean returned;
 
-    public void create(){
-    //Create a 
-        
+    public Borrowing(Student borrower){
+        this.id = count++; // increment classes global count
+
+        this.dateBorrowed = Calendar.getInstance();
+        this.dateDue = Calendar.getInstance();
+        this.dateDue.add(Calendar.DAY_OF_YEAR, 30); // set due date to 30 days from today
+
+        this.borrower = borrower;
+        this.returned = false;
     }
+
+    public boolean isReturned() {
+        return returned;
+    }
+
+    public void addBook() {
+
+    }
+
+    public void setReturned(Boolean bool) {
+        if (Boolean.TRUE.equals(bool)) {
+            returned = true;
+            dateReturned = Calendar.getInstance();
+        } else {
+            returned = false;
+            dateReturned = null;
+        }
+    }
+
     public void update(){
+    //Setter
 
     }
 }
 
 //Joe
 class Book {
-    protected int id;
+    private static int count = 0;
+    public int id;
+
     public String title;
     public String details;
     public String publisher;
 
+
+
     public void add(){
+    //Getter
 
     }
 
     public void update(){
+    //Setter
 
     }
 }

@@ -1,11 +1,74 @@
 @startuml
-'https://plantuml.com/sequence-diagram
 
-autonumber
+class User {
+    # int id
+    + String name
+    + int age
+    # String username
+    # String password
 
-Alice -> Bob: Authentication Request
-Bob --> Alice: Authentication Response
+    + User(String name, int age, String username, String password)
 
-Alice -> Bob: Another authentication Request
-Alice <-- Bob: another authentication Response
+    + boolean loginBool (String username, String password)
+
+}
+
+class Librarian {
+    + Librarian(String name, int age, String username, String password)
+    # void enableUser(Student student)
+    # void disableUser(Student student)
+}
+
+class Student {
+    + enum Status
+
+    + boolean enabled
+    + Status status
+    + Date dateCreated
+
+    + Student(String name, int age, String username, String password)
+    + Student(Status status, Date dateCreated, String name, int age, String username, String password)
+
+    + String getStatus()
+    + void browseBooks()
+}
+
+enum Status {
+        FRESHMAN
+        SOPHMORE
+        JUNIOR
+        SENIOR
+}
+
+class Borrowing {
+    # int id
+    + Book[] books
+    + Student borrower
+    + Date dateBorrowed
+    + Date dateDue
+
+    + Borrowing()
+
+    + void update()
+}
+
+class Book {
+    # int id
+    + Stromg title
+    + String details
+    + String publisher
+
+    + void add()
+    + void update()
+}
+
+User <|-- Student
+User <|-- Librarian
+Student *-- Status
+Student *-- Borrowing
+Borrowing -- Librarian
+Borrowing o-- Book
+Librarian -- Student
+Book -- Librarian
+
 @enduml
