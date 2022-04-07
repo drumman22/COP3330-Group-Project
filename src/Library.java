@@ -211,7 +211,8 @@ class Borrowing {
     public Date dateDue;
 
     public void create(){
-
+    //Create a 
+        
     }
     public void update(){
 
@@ -221,9 +222,9 @@ class Borrowing {
 //Joe
 class Book {
     protected int id;
-    private String title;
-    private String details;
-    private String publisher;
+    public String title;
+    public String details;
+    public String publisher;
 
     public void add(){
 
