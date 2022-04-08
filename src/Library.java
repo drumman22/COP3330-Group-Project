@@ -66,7 +66,7 @@ public class Library {
                 //look at transaction history
             }
             else if(choice = 3){
-                //add book
+                //Create an object for book
                 Book newBook = new Book();
                 System.out.println("Enter the following");
                 System.out.println("Title: ");
@@ -76,6 +76,7 @@ public class Library {
                 System.out.println("Publisher: ");
                 String publisher = input.nextLine();
                 
+                //Call the method on the object
                 newBook.Book(String title, String details, String publisher);
                 
             }
@@ -322,16 +323,15 @@ class Book {
     public String publisher;
 
 
-
+    //Constructor
     public void add(String title, String details, String publisher){
         this.title = title;
         this.details = details;
         this.publisher = publisher;
 
     }
-
+    
     public void update(){
-    //Setter
-
+        //return book 
     }
 }
