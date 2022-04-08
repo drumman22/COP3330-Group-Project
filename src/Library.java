@@ -67,6 +67,17 @@ public class Library {
             }
             else if(choice = 3){
                 //add book
+                Book newBook = new Book();
+                System.out.println("Enter the following");
+                System.out.println("Title: ");
+                String title = input.nextLine();
+                System.out.println("Details: ");
+                String details = input.nextLine();
+                System.out.println("Publisher: ");
+                String publisher = input.nextLine();
+                
+                newBook.Book(String title, String details, String publisher);
+                
             }
             else if(choice = 4){
                 //log off
@@ -316,7 +327,6 @@ class Book {
         this.title = title;
         this.details = details;
         this.publisher = publisher;
-        //Make sure to call book in main
 
     }
 
