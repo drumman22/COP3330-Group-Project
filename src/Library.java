@@ -38,18 +38,49 @@ public class Library {
             // check borrows
 
             System.out.print("\nTrue Student");
-        } else if (user instanceof Librarian) {
+        } 
+        
+        else if (user instanceof Librarian) {
             // user is a librarian
 
             // update student information
                 // student name
                 // student
+            System.out.println("Enter 1 to update student information");
 
             // check library transaction history
+            System.out.println("Enter 2 to check library transaction history");
+            
             // add book to library
+            System.out.println("Enter 3 to add a book to the library");
+            
+            //Log off
+            System.out.println("Enter 4 to log out");
 
+            int choice = input.nextInt();
+            
+            if(choice = 1){
+                //update student info
+            }
+            else if(choice = 2){
+                //look at transaction history
+            }
+            else if(choice = 3){
+                //add book
+            }
+            else if(choice = 4){
+                //log off
+                System.out.println("Logging Off...");
+                //Call main function
+            }
+            else{
+                System.out.println("Please choose a valid option");
+                //recursion call or call back to elseif statement for librarian
+            }
             System.out.print("\nTrue Librarian");
-        } else { System.out.print("False"); }
+        } 
+        
+        else { System.out.print("False"); }
 
     }
 
@@ -281,8 +312,11 @@ class Book {
 
 
 
-    public void add(){
-    //Getter
+    public void add(String title, String details, String publisher){
+        this.title = title;
+        this.details = details;
+        this.publisher = publisher;
+        //Make sure to call book in main
 
     }
 
