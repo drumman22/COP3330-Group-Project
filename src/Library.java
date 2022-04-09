@@ -9,185 +9,37 @@ Brian Castro
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Scanner;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Library {
-    static Scanner input = new Scanner(System.in);
-
-    public static void main(String[] args) {
-        // test case
-        System.out.println("Welcome to our Library");
-        User[] users = {new Student("Jason", 22, "username", "password"), new Librarian("David", 33, "ausername", "apassword")};
-        User user = loginMenu(users);
-
-        // test code
-        System.out.printf("Name: %s, Age: %s, Username: %s, Password: %s", user.name, user.age, user.username, user.password);
-        if (user instanceof Student) {
-            // user is a student
-            // update personal info
-
-            // browse books
-            //
-
-            // borrow books
-            //
-
-            // return books
-
-            // check borrows
-
-            System.out.print("\nTrue Student");
-        } 
-        
-        else if (user instanceof Librarian) {
-            // user is a librarian
-
-            // update student information
-                // student name
-                // student
-            System.out.println("Enter 1 to update student information");
-
-            // check library transaction history
-            System.out.println("Enter 2 to check library transaction history");
-            
-            // add book to library
-            System.out.println("Enter 3 to add a book to the library");
-            
-            //Log off
-            System.out.println("Enter 4 to log out");
-
-            int choice = input.nextInt();
-            
-            if(choice = 1){
-                //update student info
-            }
-            else if(choice = 2){
-                //look at transaction history
-            }
-            else if(choice = 3){
-                //Create an object for book
-                Book newBook = new Book();
-                System.out.println("Enter the following");
-                System.out.println("Title: ");
-                String title = input.nextLine();
-                System.out.println("Details: ");
-                String details = input.nextLine();
-                System.out.println("Publisher: ");
-                String publisher = input.nextLine();
-                
-                //Call the method on the object
-                newBook.Book(String title, String details, String publisher);
-                
-            }
-            else if(choice = 4){
-                //log off
-                System.out.println("Logging Off...");
-                //Call main function
-            }
-            else{
-                System.out.println("Please choose a valid option");
-                //recursion call or call back to elseif statement for librarian
-            }
-            System.out.print("\nTrue Librarian");
-        } 
-        
-        else { System.out.print("False"); }
-
-    }
-
-    public static User loginMenu(User[] users) {
-        int choice = validateIntInput("Login: 1\nCreate Student Account: 2\nEnter choice: ");
-
-        if (choice == 1) {
-            return login(users);
-        }
-        else if (choice == 2) {
-            return create();
-        }
-
-        // this shouldnt happen
-        else {
-            System.out.println("Something went wrong");
-            return loginMenu(users);
-        }
-    }
-
-    public static User create() {
-        System.out.println("Creating a user, please enter the following information.");
-
-        System.out.print("Enter a name: ");
-        String name = input.nextLine();
-        int age = validateIntInput("Enter your age: ");
-        Student.Status status = getStudentStatusEnum(validateIntInput("(Freshman: 1, Sophmore: 2, Junior: 3, Senior: 4)\nWhat is your Student Status: "));
-
-        // check if users already exist?
-        // check if username is not used
-        System.out.print("Enter a username: ");
-        String username = input.nextLine();
-        System.out.print("Enter a password: ");
-        String password = input.nextLine();
-
-        return new Student(status, new Date(), name, age, username, password);
-    }
-
-    public static Student.Status getStudentStatusEnum(int n) {
-        return switch (n) {
-            case 1 -> Student.Status.FRESHMAN;
-            case 2 -> Student.Status.SOPHMORE;
-            case 3 -> Student.Status.JUNIOR;
-            case 4 -> Student.Status.SENIOR;
-            default -> Student.Status.FRESHMAN;
-        };
-    }
-
-    public static User login(User[] users) {
-        System.out.print("Enter username: ");
-        String username = input.nextLine();
-        System.out.print("Enter password: ");
-        String password = input.nextLine();
-
-        // find user that validates login
-        for (User user: users) {
-            if (user.loginBool(username, password)) return user;
-        }
-
-        // if none validate login then run loginmenu again
-        System.out.println("Incorrect username or password!");
-        return loginMenu(users);
-    }
-
-    public static int validateIntInput(String msg) {
-        System.out.print(msg);
-        String in = input.nextLine();
-
-        try {
-            return Integer.parseInt(in);
-        } catch(Exception e) {
-            System.out.printf("%s is not an integer!\n", in);
-            return validateIntInput(msg);
-        }
-    }
-}
-
-// Jason
 class User {
+    public static final Map<String, User> map = new HashMap<>();
+
+    private static int count = 0;
     protected int id;
+
     public String name;
     public int age;
     protected String username;
     protected String password;
 
     public User(String name, int age, String username, String password) {
+        this.id = count++; // increment global count
+
         this.name = name;
         this.age = age;
         this.username = username;
         this.password = password;
+        map.put(username, this);
     }
 
-//    public static User create() {
-//
-//    }
+    public int getId() {
+        return id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
 
     public boolean loginBool(String username, String password) {
         return this.username.equals(username) && this.password.equals(password);
@@ -198,7 +50,6 @@ class User {
     }
 }
 
-// Jason
 class Librarian extends User {
     // public String department;
 
@@ -216,37 +67,47 @@ class Librarian extends User {
 }
 
 
-//Brian
 class Student extends User {
     public enum Status {
-        FRESHMAN,
-        SOPHMORE,
-        JUNIOR,
-        SENIOR
+        FRESHMAN, SOPHMORE, JUNIOR, SENIOR;
+
+        public static Status fromInteger(int n) {
+            return switch (n) {
+                case 2 -> Student.Status.SOPHMORE;
+                case 3 -> Student.Status.JUNIOR;
+                case 4 -> Student.Status.SENIOR;
+                default -> Student.Status.FRESHMAN;
+            };
+        }
+
+        @Override
+        public String toString() {
+            return name().charAt(0) + name().substring(1).toLowerCase();
+        }
     }
 
     public boolean enabled;
     public Status status; // year grade status of student
-    public Date dateCreated; // date account was created
+    private final Date dateCreated; // date account was created
 
     public Student(String name, int age, String username, String password) {
         this(Status.FRESHMAN, new Date(), name, age, username, password);
     }
 
-    public Student(Status status, Date dateCreated, String name, int age, String username, String password) {
+    public Student(String name, int age, String username, String password, Status status) {
+        this(status, new Date(), name, age, username, password);
+    }
+
+    private Student(Status status, Date dateCreated, String name, int age, String username, String password) {
         super(name, age, username, password);
+
+        this.enabled = true; // default true
         this.status = status;
         this.dateCreated = dateCreated;
     }
 
-    public String getStatus() {
-        return switch (status) {
-            case FRESHMAN -> "Freshman";
-            case SOPHMORE -> "Sophomore";
-            case JUNIOR -> "Junior";
-            case SENIOR -> "Senior";
-            default -> "None";
-        };
+    public Date getDateCreated() {
+        return dateCreated;
     }
 
     public void browseBooks() {
@@ -254,7 +115,6 @@ class Student extends User {
     }
 }
 
-//Brian
 // may not be using this
 class Transaction {
     protected int id;
@@ -267,10 +127,10 @@ class Transaction {
     }
 }
 
-//Joe
 class Borrowing {
     private static int count = 0;
     public int id;
+
     public Book[] books;
     public Student borrower;
     public Calendar dateBorrowed;
@@ -279,7 +139,7 @@ class Borrowing {
     public Boolean returned;
 
     public Borrowing(Student borrower){
-        this.id = count++; // increment classes global count
+        this.id = count++; // increment class global count
 
         this.dateBorrowed = Calendar.getInstance();
         this.dateDue = Calendar.getInstance();
@@ -308,12 +168,11 @@ class Borrowing {
     }
 
     public void update(){
-    //Setter
+        //Setter
 
     }
 }
 
-//Joe
 class Book {
     private static int count = 0;
     public int id;
@@ -325,13 +184,15 @@ class Book {
 
     //Constructor
     public void add(String title, String details, String publisher){
+        this.id = count++; // increment class global count
+
         this.title = title;
         this.details = details;
         this.publisher = publisher;
 
     }
-    
+
     public void update(){
-        //return book 
+        //return book
     }
 }
