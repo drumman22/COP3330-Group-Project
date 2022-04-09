@@ -1,6 +1,9 @@
 @startuml
 
 class User {
+    + static final Map<String, User> map
+    - static int count
+
     # int id
     + String name
     + int age
@@ -9,8 +12,9 @@ class User {
 
     + User(String name, int age, String username, String password)
 
+    + int getId()
+    + String getUsername()
     + boolean loginBool (String username, String password)
-
 }
 
 class Librarian {
@@ -20,16 +24,16 @@ class Librarian {
 }
 
 class Student {
-    + enum Status
-
     + boolean enabled
     + Status status
-    + Date dateCreated
+    - final Date dateCreated
 
     + Student(String name, int age, String username, String password)
-    + Student(Status status, Date dateCreated, String name, int age, String username, String password)
+    + Student(String name, int age, String username, String password, Status status)
+    - Student(Status status, Date dateCreated, String name, int age, String username, String password)
 
-    + String getStatus()
+
+    + Date getDateCreated()
     + void browseBooks()
 }
 
@@ -38,6 +42,9 @@ enum Status {
         SOPHMORE
         JUNIOR
         SENIOR
+
+        + static Status fromInteger(int n)
+        + String toString()
 }
 
 class Borrowing {
