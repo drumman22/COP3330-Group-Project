@@ -18,8 +18,8 @@ class User {
     private static int count = 0;
     protected int id;
 
-    public String name;
-    public int age;
+    private String name;
+    private int age;
     protected String username;
     protected String password;
 
@@ -37,16 +37,28 @@ class User {
         return id;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
     public String getUsername() {
         return username;
     }
 
     public boolean loginBool(String username, String password) {
         return this.username.equals(username) && this.password.equals(password);
-    }
-
-    public void update() {
-
     }
 }
 
@@ -55,6 +67,10 @@ class Librarian extends User {
 
     public Librarian(String name, int age, String username, String password) {
         super(name, age, username, password);
+    }
+
+    public Student getStudents() {
+        return null;
     }
 
     protected void enableUser(Student student) {
@@ -69,13 +85,14 @@ class Librarian extends User {
 
 class Student extends User {
     public enum Status {
-        FRESHMAN, SOPHMORE, JUNIOR, SENIOR;
+        FRESHMAN, SOPHMORE, JUNIOR, SENIOR, GRADUATE;
 
         public static Status fromInteger(int n) {
             return switch (n) {
                 case 2 -> Student.Status.SOPHMORE;
                 case 3 -> Student.Status.JUNIOR;
                 case 4 -> Student.Status.SENIOR;
+                case 5 -> Student.Status.GRADUATE;
                 default -> Student.Status.FRESHMAN;
             };
         }
@@ -86,8 +103,8 @@ class Student extends User {
         }
     }
 
-    public boolean enabled;
-    public Status status; // year grade status of student
+    private boolean enabled;
+    private Status status; // year grade status of student
     private final Date dateCreated; // date account was created
 
     public Student(String name, int age, String username, String password) {
@@ -105,6 +122,23 @@ class Student extends User {
         this.status = status;
         this.dateCreated = dateCreated;
     }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
 
     public Date getDateCreated() {
         return dateCreated;
