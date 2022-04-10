@@ -21,11 +21,8 @@ abstract class User {
     protected String password;
     private final Calendar dateCreated; // date account was created
 
-    public User(String name, int age, String username, String password) {
-        // TODO ensure that the username is unique compared to the user map
-
+    protected User(String name, int age, String username, String password) {
         this.id = count++; // increment global count
-
         this.name = name;
         this.age = age;
         this.username = username;
@@ -67,11 +64,15 @@ abstract class User {
 
     // Static methods
     public static void printAllUsers() {
-        System.out.println("\n--ALL USER ACCOUNTS--\n");
+        System.out.println("\n--ALL USER ACCOUNTS--");
         for (User user : User.map.values()) {
             user.printUser();
         }
         System.out.println();
+    }
+
+    public static boolean doesUsernameExist(String username) {
+        return map.get(username) != null;
     }
 
     // User abstract methods
@@ -130,8 +131,6 @@ class Student extends User {
     private Status status; // year grade status of student
     private Borrowing borrow; // can only have one
 
-    // TODO add a borrow array attribute, limit it to 0..3
-
     public Student(String name, int age, String username, String password) {
         this(Status.FRESHMAN, name, age, username, password);
     }
@@ -163,15 +162,27 @@ class Student extends User {
         this.status = status;
     }
 
+    public Borrowing getBorrow() {
+        return borrow;
+    }
+
     public boolean isBorrowing() { return borrow != null; }
 
-    public boolean createBorrowing() {
+    public Borrowing createBorrowing() {
         if (isBorrowing()) {
-            return false;
+            return null;
         }
 
-        borrow = new Borrowing(this);
-        return true;
+        return new Borrowing(this);
+    }
+
+    public void removeBorrowing() {
+        borrow = null;
+    }
+
+    // add borrowing to global transactions list
+    public void checkout() {
+        Borrowing.transactions.add(getBorrow());
     }
 
     public void returnBooks() {
@@ -194,7 +205,7 @@ class Borrowing {
     private static int count = 0;
     public int id;
 
-    public Book[] books = new Book[3];
+    public Book[] books = new Book[3]; // 0..3 books
     public Student borrower;
     public Calendar dateBorrowed;
     public Calendar dateDue;
@@ -210,14 +221,37 @@ class Borrowing {
 
         this.borrower = borrower;
         this.returned = false;
+    }
 
-        transactions.add(this);
+    public void printBorrowedBooks() {
+        for (Book book : books) {
+            if (book != null) book.printBook();
+        }
+    }
+
+    public void printBorrowedBookTitles() {
+        int count = 1;
+        for (Book book : books) {
+            if (book != null) {
+                System.out.printf("Book %d: \"%s\"\n", count, book.getTitle());
+            }
+
+            count++;
+        }
+    }
+
+    public void printBorrowing() {
+        System.out.printf("==Transaction %d==\n--Borrow Info--\n", id);
+        borrower.printUser();
+        System.out.println("--Borrowed Books--");
+        printBorrowedBooks();
+        System.out.println();
     }
 
     public static void printAllTransactions() {
+        System.out.println("\n==ALL TRANSACTIONS==");
         for (Borrowing trx : transactions) {
-            System.out.printf("\n--ALL TRANSACTIONS--\nTransaction %d\nBorrower: "
-            );
+            trx.printBorrowing();
         }
     }
 
@@ -236,7 +270,30 @@ class Borrowing {
         }
     }
 
+    public boolean isBooksEmpty() {
+        for (Book book: books) {
+            if (book != null) return false;
+        }
+        return true;
+    }
+
+    public boolean isBooksFull() {
+        for (Book book: books) {
+            if (book == null) return false;
+        }
+        return true;
+    }
+
+    public boolean isInBooks(Book bookCompare) {
+        for (Book book: books) {
+            if (book == bookCompare) return true;
+        }
+        return false;
+    }
+
     public boolean addBook(Book book) {
+        if (isInBooks(book)) return false;
+
         //Add book to array
         for (int i = 0; i < books.length; i++) {
             if (books[i] == null) {
@@ -248,14 +305,18 @@ class Borrowing {
         return false;
     }
 
-    public void removeBook(int index) {
-        books[index] = null;
+    public boolean removeBook(Book book) {
+        for (int i = 0; i < books.length; i++) {
+            if (books[i] == book) {
+                books[i] = null;
+                return true;
+            }
+        }
+        return false;
     }
 
     public void removeAllBooks() {
-        for (int i = 0; i < books.length; i++) {
-            removeBook(i);
-        }
+        Arrays.fill(books, null);
     }
 }
 
@@ -263,11 +324,11 @@ class Book {
     public static final Map<String, Book> map = new LinkedHashMap<>();
 
     private static int count = 0;
-    public int id;
+    private int id;
 
-    public String title;
-    public String details;
-    public String publisher;
+    private String title;
+    private String details;
+    private String publisher;
 
     //Constructor
     public Book(String title, String details, String publisher) {
@@ -280,22 +341,37 @@ class Book {
     }
 
     /* TODO remove this comment block later
-    Book: Gone like the wind (ID 2)
+    "Gone like the wind" (ID 2)
     Publisher: Person
     Details: The details are very interesting
-
      */
     public void printBook() {
-        System.out.printf("Book: %s (ID %s)\nPublisher: %s\nDetails: %s\n",
-                title, id, publisher, details);
+        System.out.printf("\"%s\" (ID %s)\nPublisher: %s\nDetails: %s\n",
+                getTitle(), getId(), getPublisher(), getDetails());
     }
 
     // static method
     public static void printAllBooks() {
-        System.out.println("\n--ALL BOOKS--\n");
+        System.out.println("\n--ALL BOOKS--");
         for (Book book : Book.map.values()) {
             book.printBook();
         }
         System.out.println();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public String getPublisher() {
+        return publisher;
     }
 }

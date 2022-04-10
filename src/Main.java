@@ -11,16 +11,16 @@ import java.util.*;
 
 public class Main {
     static Scanner input = new Scanner(System.in);
-    //private static final Map<String, User> userMap = new HashMap<>();
 
     public static void main(String[] args) {
-        // test case
-
         // hasmap of username:user object
-        // usernames must be unique
+        // usernames should be unique
         new Student("Jason", 22, "student1", "password", Student.Status.JUNIOR);
         new Student("Austin", 25, "student2", "password", Student.Status.SENIOR);
         new Librarian("David", 33, "librarian", "apassword");
+
+        new Book("My Book", "Me", "N/A");
+        new Book("My second book", "Me", "Some details");
 
         System.out.println("Welcome to our Library");
 
@@ -41,11 +41,10 @@ public class Main {
         // test code
         System.out.printf("Name: %s, Age: %s, Username: %s, Password: %s\n", user.getName(), user.getAge(), user.username, user.password);
         if (user instanceof Student student) {
-            // TODO make this work thx
-
-            System.out.println("Student Status: " + student.getStatus().toString());
+            // user is a student, run student menu
+            studentUserMenu(student);
         } else if (user instanceof Librarian librarian) {
-            // user is a librarian
+            // user is a librarian, run librarian menu
             librarianUserMenu(librarian);
         } else {
             System.out.print("False");
@@ -67,8 +66,44 @@ public class Main {
         }
     }
 
+    // create new user account
+    public static Student createStudent() {
+        System.out.println("Creating a Student account, please enter the following information.");
+
+        System.out.print("Enter a name: ");
+        String name = input.nextLine();
+        int age = validateIntInput("Enter your age: ");
+        Student.Status status = Student.Status.fromInteger(validateIntInput("(Freshman: 1, Sophmore: 2, Junior: 3, Senior: 4, Graduate: )\nWhat is your Student Status: "));
+
+        // check if users already exist?
+        // check if username is not used
+        String username = validateUsernameInput("Enter a username: ");
+        String password = getInput("Enter a password");
+
+        return new Student(name, age, username, password, status);
+    }
+
+    // attempt user login
+    public static User login() {
+        System.out.print("Enter username: ");
+        String username = input.nextLine();
+        System.out.print("Enter password: ");
+        String password = input.nextLine();
+
+        // find user that validates login
+        User user = User.map.get(username);
+        if (user != null && user.loginBool(username, password))
+            return user;
+
+        // if none validate login then run loginmenu again
+        System.out.println("Incorrect username or password!");
+        return loginMenu();
+    }
+
+    // -- Librarian Menu and Functions --
+
     public static void librarianUserMenu(Librarian librarian) {
-        int choice = validateIntInput("(Update Student Info: 1, View All Users: 2, Transaction History: 2, Add New Book: 3, Logout: 4)\nEnter choice: ");
+        int choice = validateIntInput("(Update Student Info: 1, View All Users: 2, Transaction History: 3, Add New Book: 4, Remove Book: 5, Logout: 6)\nEnter choice: ");
 
         switch(choice) {
             case 1: // update student info
@@ -87,11 +122,22 @@ public class Main {
                 // loop through users like case 2 but ignore librarians
                 // lirbarians shouldnt have the borrow transaction class
 
-
-
+                Borrowing.printAllTransactions();
+                break;
             case 4: // add a new book
-                // TODO
-            case 5: // logout
+                Book newBook = new Book(getInput("Enter book title"), getInput("Enter book publisher: "), getInput("Enter book Details: "));
+                System.out.printf("\"%s\" has been successfully added!", newBook.getTitle());
+                break;
+            case 5: // remove book from map
+                String title = getInput("Enter book title (case sensitive): ");
+                Book book = Book.map.get(title);
+                if (book == null) {
+                    System.out.printf("Could not find \"%s\".\n", title);
+                }
+
+                book.map.remove(title);
+                System.out.printf("\"%s\" was successfully removed!\n", title);
+            case 6: // logout
                 return;
             default: // wrong input
                 System.out.println("Please enter a valid choice!");
@@ -118,7 +164,7 @@ public class Main {
 
         return student;
     }
-    // might not need to pass librarian
+
     public static void updateStudentInfoMenu(Student student) {
         int choice = validateIntInput("(Name: 1, Age: 2, Status: 3, Enabled: 4, Backout: 5)\nEnter choice: ");
         switch(choice) {
@@ -145,78 +191,7 @@ public class Main {
         updateStudentInfoMenu(student);
     }
 
-    // create new user account
-    public static Student createStudent() {
-        System.out.println("Creating a Student account, please enter the following information.");
-
-        System.out.print("Enter a name: ");
-        String name = input.nextLine();
-        int age = validateIntInput("Enter your age: ");
-        Student.Status status = Student.Status.fromInteger(validateIntInput("(Freshman: 1, Sophmore: 2, Junior: 3, Senior: 4, Graduate: )\nWhat is your Student Status: "));
-
-        // check if users already exist?
-        // check if username is not used
-        System.out.print("Enter a username: ");
-        String username = input.nextLine();
-        System.out.print("Enter a password: ");
-        String password = input.nextLine();
-
-        return new Student(name, age, username, password, status);
-    }
-
-    // attempt user login
-    public static User login() {
-        System.out.print("Enter username: ");
-        String username = input.nextLine();
-        System.out.print("Enter password: ");
-        String password = input.nextLine();
-
-        // find user that validates login
-        User user = User.map.get(username);
-        if (user != null && user.loginBool(username, password))
-            return user;
-
-        // if none validate login then run loginmenu again
-        System.out.println("Incorrect username or password!");
-        return loginMenu();
-    }
-
-    public static boolean validateBooleanInput() {
-        String in = getInput("(True or False)\nEnter choice: ");
-
-        if ("TRUE".equalsIgnoreCase(in)) return true;
-        else if ("FALSE".equalsIgnoreCase(in)) return false;
-
-        System.out.println("Incorrect input!");
-        return validateBooleanInput();
-    }
-
-    public static String validateNameInput(String msg) {
-        String in = getInput(msg);
-
-        if (in.matches(".*\\d.*")){
-            System.out.println("Names should not contain a number!");
-            return validateNameInput(msg);
-        }
-
-        return in;
-    }
-
-    public static int validateIntInput(String msg) {
-        String in = getInput(msg);
-
-        try {
-            return Integer.parseInt(in);
-        } catch(Exception e) {
-            System.out.printf("%s is not an integer!\n", in);
-            return validateIntInput(msg);
-        }
-    }
-
-    public static String getInput(String msg) {
-        System.out.print(msg);
-        return input.nextLine();
-    }
+    // -- Student Menus and Functions --
 
     public static void studentUserMenu(Student student) {
         int choice = validateIntInput("(Browse books: 1, Borrow books: 2, Return books: 3, Check borrowed books: 4, logout:5,)\nEnter choice: ");
@@ -225,6 +200,11 @@ public class Main {
                 Book.printAllBooks();
                 break;
             case 2: // Borrow books
+                if (!student.isBorrowing()) {
+                    System.out.println("You are already borrowing books!");
+                    break;
+                }
+                // else
                 studentBorrowMenu(student);
                 break;
             case 3: // Return books
@@ -238,6 +218,7 @@ public class Main {
                 System.out.println("Please enter a valid choice!");
                 break;
         }
+
     studentUserMenu(student);
     }
 }
