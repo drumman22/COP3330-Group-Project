@@ -19,7 +19,7 @@ class User {
     private int age;
     protected String username;
     protected String password;
-    private final Date dateCreated; // date account was created
+    private final Calendar dateCreated; // date account was created
 
     public User(String name, int age, String username, String password) {
         // TODO ensure that the username is unique compared to the user map
@@ -30,7 +30,7 @@ class User {
         this.age = age;
         this.username = username;
         this.password = password;
-        this.dateCreated = new Date();
+        this.dateCreated = Calendar.getInstance();
 
         map.put(username, this);
     }
@@ -59,7 +59,7 @@ class User {
         return username;
     }
 
-    public Date getDateCreated() { return dateCreated; }
+    public Calendar getDateCreated() { return dateCreated; }
 
     public boolean loginBool(String username, String password) {
         return this.username.equals(username) && this.password.equals(password);
@@ -109,6 +109,8 @@ class Student extends User {
 
     private boolean enabled;
     private Status status; // year grade status of student
+    private Borrowing borrow; // can only have one
+
     // TODO add a borrow array attribute, limit it to 0..3
 
     public Student(String name, int age, String username, String password) {
@@ -142,33 +144,35 @@ class Student extends User {
         this.status = status;
     }
 
-    public void browseBooks() {
+    public boolean isBorrowing() { return borrow != null; }
 
+    public boolean createBorrowing() {
+        if (isBorrowing()) {
+            return false;
+        }
+
+        borrow = new Borrowing(this);
+        return true;
     }
-}
 
-// may not be using this
-class Transaction {
-    protected int id;
-    public Date returned;
-
-    public Borrowing borrowing;
-
-    public void update() {
-
+    public void returnBooks() {
+        borrow.setReturned(false);
+        borrow = null;
     }
 }
 
 class Borrowing {
+    public static final List<Borrowing> transactions = new ArrayList<>();
+
     private static int count = 0;
     public int id;
 
-    public Book[] books;
+    public Book[] books = new Book[3];
     public Student borrower;
     public Calendar dateBorrowed;
     public Calendar dateDue;
-    public Calendar dateReturned;
-    public Boolean returned;
+    private Calendar dateReturned;
+    private Boolean returned;
 
     public Borrowing(Student borrower){
         this.id = count++; // increment class global count
@@ -179,14 +183,13 @@ class Borrowing {
 
         this.borrower = borrower;
         this.returned = false;
+
+        transactions.add(this);
     }
 
+    //
     public boolean isReturned() {
         return returned;
-    }
-
-    public void addBook() {
-
     }
 
     public void setReturned(Boolean bool) {
@@ -199,13 +202,32 @@ class Borrowing {
         }
     }
 
-    public void update(){
-        //Setter
+    public boolean addBook(Book book) {
+        //Add book to array
+        for (int i = 0; i < books.length; i++) {
+            if (books[i] == null) {
+                books[i] = book;
+                return true;
+            }
+        }
 
+        return false;
+    }
+
+    public void removeBook(int index) {
+        books[index] = null;
+    }
+
+    public void removeAllBooks() {
+        for (int i = 0; i < books.length; i++) {
+            removeBook(i);
+        }
     }
 }
 
 class Book {
+    public static final Map<String, Book> map = new LinkedHashMap<>();
+
     private static int count = 0;
     public int id;
 
@@ -215,16 +237,19 @@ class Book {
 
 
     //Constructor
-    public void add(String title, String details, String publisher){
+    public Book(String title, String details, String publisher) {
         this.id = count++; // increment class global count
 
         this.title = title;
         this.details = details;
         this.publisher = publisher;
-
+        map.put(title, this);
     }
 
-    public void update(){
-        //return book
+    // static method
+    public static void printAllBooks() {
+        for (Book book : Book.map.values()) {
+            System.out.printf("%s %s, %s, %s", book.id, book.title, book.publisher, book.details);
+        }
     }
 }

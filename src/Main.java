@@ -53,9 +53,6 @@ public class Main {
             // return books
 
             // check borrows
-            
-            
-            }
 
             System.out.println("Student Status: " + student.getStatus().toString());
         } else if (user instanceof Librarian librarian) {
@@ -239,36 +236,26 @@ public class Main {
         System.out.print(msg);
         return input.nextLine();
     }
-}
 
-public static void studentUserMenu(Student student){
-    int choice = validateIntInput("(Update personal info: 1, Browse books: 2, borrow books: 3, return books: 4, check: 5, logout:6,)\nEnter choice: ");
-    switch(choice) {
-        case 1: // update student info
-            Student updateStudent = getStudent(student);
-           
+    public static void studentUserMenu(Student student){
+        int choice = validateIntInput("(Browse books: 1, Borrow books: 2, Return books: 3, Check: 4, logout:5,)\nEnter choice: ");
+        switch(choice) {
+            case 1: // Browse books
 
-            //Come Back to work on
-            updateStudentInfoMenu(librarian, student);
+                break;
+            case 2: // Borrow books
 
-            // print out the newly updated student account info
-            System.out.printf("Updated Student Account Info\nUsername: %s, Name: %s, Age: %d\nStatus: %s, Enabled: %s, Created on: %s\n\n",
-                    student.getUsername(), student.getName(), student.getAge(), student.getStatus().toString(), student.isEnabled(), student.getDateCreated().toString());
-            break;
-        case 2: // view all users
-           
-            break;
-        case 3: // transaction history
-            // TODO transaction history
-            // loop through users like case 2 but ignore librarians
-            // lirbarians shouldnt have the borrow transaction class
-        case 4: // add a new book
-            // TODO
-        case 5: // logout
-            return;
-        default: // wrong input
-            System.out.println("Please enter a valid choice!");
-            break;
+            case 3: // Return books
+                // TODO
+
+            case 4: // Check
+
+            case 5: // logout
+                return;
+            default: // wrong input
+                System.out.println("Please enter a valid choice!");
+                break;
+        }
+    studentUserMenu(student);
     }
-studentUserMenu(student);
 }
