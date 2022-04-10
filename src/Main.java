@@ -41,18 +41,7 @@ public class Main {
         // test code
         System.out.printf("Name: %s, Age: %s, Username: %s, Password: %s\n", user.getName(), user.getAge(), user.username, user.password);
         if (user instanceof Student student) {
-            // user is a student
-            // update personal info
-
-            // browse books
-            //
-
-            // borrow books
-            //
-
-            // return books
-
-            // check borrows
+            // TODO make this work thx
 
             System.out.println("Student Status: " + student.getStatus().toString());
         } else if (user instanceof Librarian librarian) {
@@ -84,30 +73,22 @@ public class Main {
         switch(choice) {
             case 1: // update student info
                 Student student = getStudent(librarian);
-                if (student == null) break;
+                if (student == null) break; // break if student doesn't exist
 
-                // else
-                updateStudentInfoMenu(librarian, student);
-
-                // print out the newly updated student account info
-                System.out.printf("Updated Student Account Info\nUsername: %s, Name: %s, Age: %d\nStatus: %s, Enabled: %s, Created on: %s\n\n",
-                        student.getUsername(), student.getName(), student.getAge(), student.getStatus().toString(), student.isEnabled(), student.getDateCreated().toString());
+                // else go to update menu
+                updateStudentInfoMenu(student);
+                student.printUser(); // print student info
                 break;
             case 2: // view all users
-                for (User user : User.map.values()) {
-                    System.out.printf("User Account: %s (%d), Created on: %s\nName: %s, Age: %d\n",
-                            user.getUsername(), user.getId(), user.getDateCreated().toString(), user.getName(), user.getAge());
-
-                    if (user instanceof Student studentUser) {
-                        System.out.printf("Status: %s, Enabled: %s", studentUser.getStatus(), studentUser.isEnabled());
-                    }
-                    System.out.println();
-                }
+                User.printAllUsers();
                 break;
             case 3: // transaction history
                 // TODO transaction history
                 // loop through users like case 2 but ignore librarians
                 // lirbarians shouldnt have the borrow transaction class
+
+
+
             case 4: // add a new book
                 // TODO
             case 5: // logout
@@ -138,7 +119,7 @@ public class Main {
         return student;
     }
     // might not need to pass librarian
-    public static void updateStudentInfoMenu(Librarian librarian, Student student) {
+    public static void updateStudentInfoMenu(Student student) {
         int choice = validateIntInput("(Name: 1, Age: 2, Status: 3, Enabled: 4, Backout: 5)\nEnter choice: ");
         switch(choice) {
             case 1: // update name
@@ -157,11 +138,11 @@ public class Main {
                 return;
             default: // wrong input
                 System.out.println("Please enter a valid choice!");
-                updateStudentInfoMenu(librarian, student);
+                updateStudentInfoMenu(student);
                 break;
         }
 
-        updateStudentInfoMenu(librarian, student);
+        updateStudentInfoMenu(student);
     }
 
     // create new user account
@@ -237,14 +218,15 @@ public class Main {
         return input.nextLine();
     }
 
-    public static void studentUserMenu(Student student){
-        int choice = validateIntInput("(Browse books: 1, Borrow books: 2, Return books: 3, Check: 4, logout:5,)\nEnter choice: ");
+    public static void studentUserMenu(Student student) {
+        int choice = validateIntInput("(Browse books: 1, Borrow books: 2, Return books: 3, Check borrowed books: 4, logout:5,)\nEnter choice: ");
         switch(choice) {
             case 1: // Browse books
-
+                Book.printAllBooks();
                 break;
             case 2: // Borrow books
-
+                studentBorrowMenu(student);
+                break;
             case 3: // Return books
                 // TODO
 

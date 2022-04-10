@@ -9,7 +9,7 @@ Brian Castro
 
 import java.util.*;
 
-class User {
+abstract class User {
     public static final Map<String, User> map = new LinkedHashMap<>();
 
     private static int count = 0;
@@ -64,6 +64,18 @@ class User {
     public boolean loginBool(String username, String password) {
         return this.username.equals(username) && this.password.equals(password);
     }
+
+    // Static methods
+    public static void printAllUsers() {
+        System.out.println("\n--ALL USER ACCOUNTS--\n");
+        for (User user : User.map.values()) {
+            user.printUser();
+        }
+        System.out.println();
+    }
+
+    // User abstract methods
+    public abstract void printUser();
 }
 
 class Librarian extends User {
@@ -83,6 +95,13 @@ class Librarian extends User {
 
     protected void disableUser(Student student) {
 
+    }
+
+    @Override
+    public void printUser() {
+        System.out.printf("Librarian Account: %s (ID %d), Created on %s\nName: %s, Age: %d\n",
+                this.getUsername(), this.getId(), this.getDateCreated().toString(),
+                this.getName(), this.getAge());
     }
 }
 
@@ -159,6 +178,14 @@ class Student extends User {
         borrow.setReturned(false);
         borrow = null;
     }
+
+    @Override
+    public void printUser() {
+        System.out.printf("Student Account: %s (ID %d), Created on %s\nName: %s, Age: %d\nStatus: %s, Account Enabled: %s\n",
+                this.getUsername(), this.getId(), this.getDateCreated().toString(),
+                this.getName(), this.getAge(),
+                this.getStatus().toString(), this.isEnabled());
+    }
 }
 
 class Borrowing {
@@ -185,6 +212,13 @@ class Borrowing {
         this.returned = false;
 
         transactions.add(this);
+    }
+
+    public static void printAllTransactions() {
+        for (Borrowing trx : transactions) {
+            System.out.printf("\n--ALL TRANSACTIONS--\nTransaction %d\nBorrower: "
+            );
+        }
     }
 
     //
@@ -235,7 +269,6 @@ class Book {
     public String details;
     public String publisher;
 
-
     //Constructor
     public Book(String title, String details, String publisher) {
         this.id = count++; // increment class global count
@@ -246,10 +279,23 @@ class Book {
         map.put(title, this);
     }
 
+    /* TODO remove this comment block later
+    Book: Gone like the wind (ID 2)
+    Publisher: Person
+    Details: The details are very interesting
+
+     */
+    public void printBook() {
+        System.out.printf("Book: %s (ID %s)\nPublisher: %s\nDetails: %s\n",
+                title, id, publisher, details);
+    }
+
     // static method
     public static void printAllBooks() {
+        System.out.println("\n--ALL BOOKS--\n");
         for (Book book : Book.map.values()) {
-            System.out.printf("%s %s, %s, %s", book.id, book.title, book.publisher, book.details);
+            book.printBook();
         }
+        System.out.println();
     }
 }
