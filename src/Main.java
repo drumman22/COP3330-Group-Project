@@ -17,8 +17,9 @@ public class Main {
         // test case
 
         // hasmap of username:user object
-        // usernames will be unique
+        // usernames must be unique
         new Student("Jason", 22, "student1", "password", Student.Status.JUNIOR);
+        new Student("Austin", 25, "student2", "password", Student.Status.SENIOR);
         new Librarian("David", 33, "librarian", "apassword");
 
         System.out.println("Welcome to our Library");
@@ -78,7 +79,7 @@ public class Main {
     }
 
     public static void librarianUserMenu(Librarian librarian) {
-        int choice = validateIntInput("(Update Student Info: 1, Transaction History: 2, Add New Book: 3, Logout: 4)\nEnter choice: ");
+        int choice = validateIntInput("(Update Student Info: 1, View All Users: 2, Transaction History: 2, Add New Book: 3, Logout: 4)\nEnter choice: ");
 
         switch(choice) {
             case 1: // update student info
@@ -89,12 +90,26 @@ public class Main {
                 updateStudentInfoMenu(librarian, student);
 
                 // print out the newly updated student account info
-                System.out.printf("Updated Student Account Info\nUsername: %s, Name: %s, Age: %s\nStatus: %s, Enabled: %s, Created on: %s\n\n",
+                System.out.printf("Updated Student Account Info\nUsername: %s, Name: %s, Age: %d\nStatus: %s, Enabled: %s, Created on: %s\n\n",
                         student.getUsername(), student.getName(), student.getAge(), student.getStatus().toString(), student.isEnabled(), student.getDateCreated().toString());
                 break;
             case 2: // view all users
+                for (User user : User.map.values()) {
+                    System.out.printf("User Account: %s (%d), Created on: %s\nName: %s, Age: %d\n",
+                            user.getUsername(), user.getId(), user.getDateCreated().toString(), user.getName(), user.getAge());
+
+                    if (user instanceof Student studentUser) {
+                        System.out.printf("Status: %s, Enabled: %s", studentUser.getStatus(), studentUser.isEnabled());
+                    }
+                    System.out.println();
+                }
+                break;
             case 3: // transaction history
+                // TODO transaction history
+                // loop through users like case 2 but ignore librarians
+                // lirbarians shouldnt have the borrow transaction class
             case 4: // add a new book
+                // TODO
             case 5: // logout
                 return;
             default: // wrong input

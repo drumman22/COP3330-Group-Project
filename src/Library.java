@@ -7,13 +7,10 @@ Joseph Eddy
 Brian Castro
 */
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 class User {
-    public static final Map<String, User> map = new HashMap<>();
+    public static final Map<String, User> map = new LinkedHashMap<>();
 
     private static int count = 0;
     protected int id;
@@ -22,14 +19,19 @@ class User {
     private int age;
     protected String username;
     protected String password;
+    private final Date dateCreated; // date account was created
 
     public User(String name, int age, String username, String password) {
+        // TODO ensure that the username is unique compared to the user map
+
         this.id = count++; // increment global count
 
         this.name = name;
         this.age = age;
         this.username = username;
         this.password = password;
+        this.dateCreated = new Date();
+
         map.put(username, this);
     }
 
@@ -56,6 +58,8 @@ class User {
     public String getUsername() {
         return username;
     }
+
+    public Date getDateCreated() { return dateCreated; }
 
     public boolean loginBool(String username, String password) {
         return this.username.equals(username) && this.password.equals(password);
@@ -105,22 +109,21 @@ class Student extends User {
 
     private boolean enabled;
     private Status status; // year grade status of student
-    private final Date dateCreated; // date account was created
+    // TODO add a borrow array attribute, limit it to 0..3
 
     public Student(String name, int age, String username, String password) {
-        this(Status.FRESHMAN, new Date(), name, age, username, password);
+        this(Status.FRESHMAN, name, age, username, password);
     }
 
     public Student(String name, int age, String username, String password, Status status) {
-        this(status, new Date(), name, age, username, password);
+        this(status, name, age, username, password);
     }
 
-    private Student(Status status, Date dateCreated, String name, int age, String username, String password) {
+    private Student(Status status, String name, int age, String username, String password) {
         super(name, age, username, password);
 
         this.enabled = true; // default true
         this.status = status;
-        this.dateCreated = dateCreated;
     }
 
     public boolean isEnabled() {
@@ -137,11 +140,6 @@ class Student extends User {
 
     public void setStatus(Status status) {
         this.status = status;
-    }
-
-
-    public Date getDateCreated() {
-        return dateCreated;
     }
 
     public void browseBooks() {
