@@ -7,6 +7,8 @@ Joseph Eddy
 Brian Castro
 */
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Main {
@@ -125,8 +127,8 @@ public class Main {
                 Borrowing.printAllTransactions();
                 break;
             case 4: // add a new book
-                Book newBook = new Book(getInput("Enter book title"), getInput("Enter book publisher: "), getInput("Enter book Details: "));
-                System.out.printf("\"%s\" has been successfully added!", newBook.getTitle());
+                Book newBook = new Book(getInput("Enter book title: "), getInput("Enter book publisher: "), getInput("Enter book details: "));
+                System.out.printf("\"%s\" has been successfully added!\n", newBook.getTitle());
                 break;
             case 5: // remove book from map
                 String title = getInput("Enter book title (case sensitive): ");
@@ -159,9 +161,7 @@ public class Main {
         }
 
         Student student = (Student) user;
-        System.out.printf("Student Account Info\nUsername: %s, Name: %s, Age: %s\nStatus: %s, Enabled: %s, Created on: %s\n",
-                student.getUsername(), student.getName(), student.getAge(), student.getStatus().toString(), student.isEnabled(), student.getDateCreated().toString());
-
+        student.printUser();
         return student;
     }
 
@@ -194,13 +194,13 @@ public class Main {
     // -- Student Menus and Functions --
 
     public static void studentUserMenu(Student student) {
-        int choice = validateIntInput("(Browse books: 1, Borrow books: 2, Return books: 3, Check borrowed books: 4, logout:5,)\nEnter choice: ");
+        int choice = validateIntInput("(Browse books: 1, Borrow books: 2, Return books: 3, Check borrowed books: 4, logout: 5,)\nEnter choice: ");
         switch(choice) {
             case 1: // Browse books
                 Book.printAllBooks();
                 break;
             case 2: // Borrow books
-                if (!student.isBorrowing()) {
+                if (student.isBorrowing()) {
                     System.out.println("You are already borrowing books!");
                     break;
                 }

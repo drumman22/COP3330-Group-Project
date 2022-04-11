@@ -7,6 +7,8 @@ Joseph Eddy
 Brian Castro
 */
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 abstract class User {
@@ -67,6 +69,7 @@ abstract class User {
         System.out.println("\n--ALL USER ACCOUNTS--");
         for (User user : User.map.values()) {
             user.printUser();
+            System.out.println();
         }
         System.out.println();
     }
@@ -100,8 +103,9 @@ class Librarian extends User {
 
     @Override
     public void printUser() {
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         System.out.printf("Librarian Account: %s (ID %d), Created on %s\nName: %s, Age: %d\n",
-                this.getUsername(), this.getId(), this.getDateCreated().toString(),
+                this.getUsername(), this.getId(), formatter.format(this.getDateCreated().getTime()),
                 this.getName(), this.getAge());
     }
 }
@@ -166,14 +170,15 @@ class Student extends User {
         return borrow;
     }
 
-    public boolean isBorrowing() { return borrow != null; }
+    public boolean isBorrowing() { return getBorrow() != null; }
 
     public Borrowing createBorrowing() {
         if (isBorrowing()) {
             return null;
         }
 
-        return new Borrowing(this);
+        borrow = new Borrowing(this);
+        return borrow;
     }
 
     public void removeBorrowing() {
@@ -192,8 +197,9 @@ class Student extends User {
 
     @Override
     public void printUser() {
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         System.out.printf("Student Account: %s (ID %d), Created on %s\nName: %s, Age: %d\nStatus: %s, Account Enabled: %s\n",
-                this.getUsername(), this.getId(), this.getDateCreated().toString(),
+                this.getUsername(), this.getId(), formatter.format(this.getDateCreated().getTime()),
                 this.getName(), this.getAge(),
                 this.getStatus().toString(), this.isEnabled());
     }
@@ -201,11 +207,11 @@ class Student extends User {
 
 class Borrowing {
     public static final List<Borrowing> transactions = new ArrayList<>();
-
+    private static final int maxBooks = 3;
     private static int count = 0;
     public int id;
 
-    public Book[] books = new Book[3]; // 0..3 books
+    public List<Book> books = new LinkedList<>(); // 0..3 books
     public Student borrower;
     public Calendar dateBorrowed;
     public Calendar dateDue;
@@ -230,18 +236,18 @@ class Borrowing {
     }
 
     public void printBorrowedBookTitles() {
-        int count = 1;
+        int i = 1;
         for (Book book : books) {
             if (book != null) {
-                System.out.printf("Book %d: \"%s\"\n", count, book.getTitle());
+                System.out.printf("Book %d: \"%s\"\n", i, book.getTitle());
             }
 
-            count++;
+            i++;
         }
     }
 
     public void printBorrowing() {
-        System.out.printf("==Transaction %d==\n--Borrow Info--\n", id);
+        System.out.printf("==Transaction %d==\n--User Info--\n", id);
         borrower.printUser();
         System.out.println("--Borrowed Books--");
         printBorrowedBooks();
@@ -249,10 +255,16 @@ class Borrowing {
     }
 
     public static void printAllTransactions() {
+        if (transactions.isEmpty()) {
+            System.out.println("There are no transactions!\n");
+        }
+
         System.out.println("\n==ALL TRANSACTIONS==");
         for (Borrowing trx : transactions) {
             trx.printBorrowing();
+            System.out.println();
         }
+        System.out.println();
     }
 
     //
@@ -271,52 +283,30 @@ class Borrowing {
     }
 
     public boolean isBooksEmpty() {
-        for (Book book: books) {
-            if (book != null) return false;
-        }
-        return true;
+        return books.isEmpty();
     }
 
     public boolean isBooksFull() {
-        for (Book book: books) {
-            if (book == null) return false;
-        }
-        return true;
+        return books.size() >= maxBooks;
     }
 
-    public boolean isInBooks(Book bookCompare) {
-        for (Book book: books) {
-            if (book == bookCompare) return true;
-        }
-        return false;
+    public boolean containsBook(Book bookCompare) {
+        return books.contains(bookCompare);
     }
 
     public boolean addBook(Book book) {
-        if (isInBooks(book)) return false;
+        if (containsBook(book) || isBooksFull()) return false;
 
-        //Add book to array
-        for (int i = 0; i < books.length; i++) {
-            if (books[i] == null) {
-                books[i] = book;
-                return true;
-            }
-        }
-
-        return false;
+        books.add(book);
+        return true;
     }
 
     public boolean removeBook(Book book) {
-        for (int i = 0; i < books.length; i++) {
-            if (books[i] == book) {
-                books[i] = null;
-                return true;
-            }
-        }
-        return false;
+        return books.remove(book);
     }
 
-    public void removeAllBooks() {
-        Arrays.fill(books, null);
+    public void clearAllBooks() {
+        books.clear();
     }
 }
 
@@ -340,11 +330,6 @@ class Book {
         map.put(title, this);
     }
 
-    /* TODO remove this comment block later
-    "Gone like the wind" (ID 2)
-    Publisher: Person
-    Details: The details are very interesting
-     */
     public void printBook() {
         System.out.printf("\"%s\" (ID %s)\nPublisher: %s\nDetails: %s\n",
                 getTitle(), getId(), getPublisher(), getDetails());
