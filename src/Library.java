@@ -1,6 +1,7 @@
 /*
 UCF COP3330 Spring 2022
 Group Project
+G43
 
 Jason Grossman
 Joseph Eddy
@@ -391,7 +392,7 @@ class Book {
         return map.get(title.toUpperCase());
     }
 
-    public static Book removeBook(String title) {
-        return map.remove(title.toUpperCase());
+    public static void removeBook(String title) {
+        map.remove(title.toUpperCase());
     }
 }

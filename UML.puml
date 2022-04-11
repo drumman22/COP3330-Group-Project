@@ -1,7 +1,6 @@
 @startuml
 abstract User {
     + static final Map<String, User> map
-
     - static int count
 
     # int id
@@ -47,7 +46,6 @@ class Student {
     + Status getStatus()
     + void setStatus(Status status)
     + Borrowing getBorrow()
-    + Date getDateCreated()
 
     + boolean isBorrowing()
     + void createBorrowing()
@@ -94,6 +92,7 @@ class Borrowing {
     + void printBorrowedBookTitles()
     + void printBorrowingInfo()
 
+    + boolean isOverdue()
     + boolean isBooksEmpty()
     + boolean isBooksFull()
     + boolean containsBook(Book bookCompare)
@@ -123,6 +122,8 @@ class Book {
     + void printBook()
 
     + static printAllBooks()
+    + static Book getBook(String title)
+    + void removeBook(String title)
 }
 
 User <|-- Student

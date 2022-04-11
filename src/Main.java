@@ -1,6 +1,7 @@
 /*
 UCF COP3330 Spring 2022
 Group Project
+G43
 
 Jason Grossman
 Joseph Eddy
@@ -15,13 +16,17 @@ public class Main {
     public static void main(String[] args) {
         // hasmap of username:user object
         // usernames should be unique
-        new Librarian("David", 33, "librarian", "apassword");
+        new Librarian("David", 33, "librarian", "password");
         new Student("Jason", 22, "student1", "password", Student.Status.JUNIOR);
-        new Student("Austin", 25, "student2", "password", Student.Status.SENIOR);
+        new Student("Austin", 25, "student2", "pass", Student.Status.SENIOR);
 
         // adding books to library
         new Book("My Book", "Me", "N/A");
         new Book("My second book", "Me", "Some details");
+        new Book("Physics", "UCF", "Physics book for 2020");
+        new Book("Chemistry", "UCF", "Learn Chemistry in 2022");
+        new Book("Computer Science", "UCF", "Python and Java in 2022");
+        new Book("Calculus", "UCF", "Derivatives, Integrals, Limits");
 
         System.out.println("Welcome to our Library");
 
@@ -40,7 +45,7 @@ public class Main {
         if (user == null) return false;
 
         // test code
-        System.out.printf("Name: %s, Age: %s, Username: %s, Password: %s\n", user.getName(), user.getAge(), user.username, user.password);
+        System.out.printf("Logged in as %s. Welcome %s!\n", user.getUsername(), user.getName());
         if (user instanceof Student student) {
             // user is a student, run student menu
             studentUserMenu(student);
@@ -246,7 +251,7 @@ public class Main {
                 }
 
                 // ask user the book they want added to cart
-                student.getBorrow().printBorrowedBooks();
+                student.getBorrow().printBorrowedBookTitles();
                 title = getInput("Enter book title: ");
                 book = Book.getBook(title);
                 if (book == null) {
@@ -268,7 +273,7 @@ public class Main {
                     break;
                 }
                 // ask user the book they want removed from cart
-                student.getBorrow().printBorrowedBooks();
+                student.getBorrow().printBorrowedBookTitles();
                 title = getInput("Enter book title (case sensitive): ");
                 book = Book.getBook(title);
                 if (book == null) {
