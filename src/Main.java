@@ -15,10 +15,11 @@ public class Main {
     public static void main(String[] args) {
         // hasmap of username:user object
         // usernames should be unique
+        new Librarian("David", 33, "librarian", "apassword");
         new Student("Jason", 22, "student1", "password", Student.Status.JUNIOR);
         new Student("Austin", 25, "student2", "password", Student.Status.SENIOR);
-        new Librarian("David", 33, "librarian", "apassword");
 
+        // adding books to library
         new Book("My Book", "Me", "N/A");
         new Book("My second book", "Me", "Some details");
 
@@ -73,12 +74,12 @@ public class Main {
         System.out.print("Enter a name: ");
         String name = input.nextLine();
         int age = validateIntInput("Enter your age: ");
-        Student.Status status = Student.Status.fromInteger(validateIntInput("(Freshman: 1, Sophmore: 2, Junior: 3, Senior: 4, Graduate: )\nWhat is your Student Status: "));
+        Student.Status status = Student.Status.fromInteger(validateIntInput("(Freshman: 1, Sophmore: 2, Junior: 3, Senior: 4, Graduate: 5)\nWhat is your Student Status: "));
 
         // check if users already exist?
         // check if username is not used
         String username = validateUsernameInput("Enter a username: ");
-        String password = getInput("Enter a password");
+        String password = getInput("Enter a password: ");
 
         return new Student(name, age, username, password, status);
     }
@@ -118,10 +119,6 @@ public class Main {
                 User.printAllUsers();
                 break;
             case 3: // transaction history
-                // TODO transaction history
-                // loop through users like case 2 but ignore librarians
-                // lirbarians shouldnt have the borrow transaction class
-
                 Borrowing.printAllTransactions();
                 break;
             case 4: // add a new book
@@ -129,8 +126,8 @@ public class Main {
                 System.out.printf("\"%s\" has been successfully added!\n", newBook.getTitle());
                 break;
             case 5: // remove book from map
-                String title = getInput("Enter book title (case sensitive): ");
-                Book book = Book.map.get(title);
+                String title = getInput("Enter book title: ");
+                Book book = Book.getBook(title);
                 if (book == null) {
                     System.out.printf("Could not find \"%s\".\n", title);
                 }
@@ -203,6 +200,7 @@ public class Main {
                     break;
                 }
                 // else
+                System.out.println("You may rent up to 3 unique books.");
                 studentBorrowMenu(student);
                 break;
             case 3: // Return books
@@ -211,7 +209,9 @@ public class Main {
                     break;
                 }
 
+                System.out.printf("You are %soverdue!\n", student.getBorrow().isOverdue() ? "" : "not ");
                 student.returnBooks();
+                System.out.println("Succefully returned books!");
                 break;
             case 4: // Check Current Borrow
                 if (!student.isBorrowing()) {
@@ -248,7 +248,7 @@ public class Main {
                 // ask user the book they want added to cart
                 student.getBorrow().printBorrowedBooks();
                 title = getInput("Enter book title: ");
-                book = Book.map.get(title);
+                book = Book.getBook(title);
                 if (book == null) {
                     System.out.printf("Could not find \"%s\".\n", title);
                     break;
@@ -269,8 +269,8 @@ public class Main {
                 }
                 // ask user the book they want removed from cart
                 student.getBorrow().printBorrowedBooks();
-                title = getInput("Enter book title: ");
-                book = Book.map.get(title);
+                title = getInput("Enter book title (case sensitive): ");
+                book = Book.getBook(title);
                 if (book == null) {
                     System.out.printf("Could not find \"%s\".\n", title);
                     break;

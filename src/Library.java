@@ -276,10 +276,10 @@ class Borrowing {
         String returnedDateString;
         if (dateReturned == null) returnedDateString = "N/A";
         else returnedDateString = formatter.format(dateReturned.getTime());
-        
 
-        System.out.printf("==Transaction %d==\n", id);
-        System.out.printf("Date Borrowed: %s, Date Due: %s\nDate Returned: %s, Overdue: %s",
+
+        System.out.printf("\n==Transaction ID %d==\n", id);
+        System.out.printf("Date Borrowed: %s, Date Due: %s\nDate Returned: %s, Overdue: %s\n",
                 formatter.format(dateBorrowed.getTime()), formatter.format(dateDue.getTime()),
                 returnedDateString, isOverdue());
 
@@ -332,9 +332,7 @@ class Borrowing {
         System.out.println("\n==ALL TRANSACTIONS==");
         for (Borrowing trx : transactions) {
             trx.printBorrowingInfo();
-            System.out.println();
         }
-        System.out.println();
     }
 }
 
@@ -349,13 +347,13 @@ class Book {
     private String publisher;
 
     //Constructor
-    public Book(String title, String details, String publisher) {
+    public Book(String title, String publisher, String details) {
         this.id = count++; // increment class global count
 
         this.title = title;
         this.details = details;
         this.publisher = publisher;
-        map.put(title, this);
+        map.put(title.toUpperCase(), this);
     }
 
     // Getters
@@ -387,5 +385,9 @@ class Book {
             book.printBook();
         }
         System.out.println();
+    }
+
+    public static Book getBook(String title) {
+        return map.get(title.toUpperCase());
     }
 }
