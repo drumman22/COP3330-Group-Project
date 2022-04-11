@@ -272,18 +272,28 @@ class Borrowing {
 
     public void printBorrowingInfo() {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        Boolean isOverdue = dateReturned.after(dateDue);
+
+        String returnedDateString;
+        if (dateReturned == null) returnedDateString = "N/A";
+        else returnedDateString = formatter.format(dateReturned.getTime());
+        
 
         System.out.printf("==Transaction %d==\n", id);
         System.out.printf("Date Borrowed: %s, Date Due: %s\nDate Returned: %s, Overdue: %s",
                 formatter.format(dateBorrowed.getTime()), formatter.format(dateDue.getTime()),
-                formatter.format(dateReturned.getTime()), isOverdue);
+                returnedDateString, isOverdue());
 
         System.out.println("--User Info--");
         borrower.printUser();
         System.out.println("--Borrowed Books--");
         printBorrowedBooks();
         System.out.println();
+    }
+
+    public boolean isOverdue() {
+        if (dateReturned == null)
+            return Calendar.getInstance().after(dateDue);
+        return dateReturned.after(dateDue);
     }
 
     public boolean isBooksEmpty() {

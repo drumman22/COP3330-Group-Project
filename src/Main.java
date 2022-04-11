@@ -7,8 +7,6 @@ Joseph Eddy
 Brian Castro
 */
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Main {
@@ -251,7 +249,6 @@ public class Main {
                 student.getBorrow().printBorrowedBooks();
                 title = getInput("Enter book title: ");
                 book = Book.map.get(title);
-                book.printBook();
                 if (book == null) {
                     System.out.printf("Could not find \"%s\".\n", title);
                     break;
