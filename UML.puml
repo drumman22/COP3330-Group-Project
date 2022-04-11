@@ -1,40 +1,60 @@
 @startuml
-
-class User {
+abstract User {
     + static final Map<String, User> map
+
     - static int count
 
     # int id
-    + String name
-    + int age
+    # String name
+    # int age
     # String username
     # String password
+    # final Calendar dateCreated
 
     + User(String name, int age, String username, String password)
 
     + int getId()
+    + String getName()
+    + void setName(String name)
+    + int getAge()
+    + void setAge(int age)
     + String getUsername()
+    + Calendar getDateCreated()
     + boolean loginBool (String username, String password)
+
+    + static void printAllUsers()
+    + static boolean doesUsernameExist(String username)
+
+    + abstract void printUser()
 }
 
 class Librarian {
     + Librarian(String name, int age, String username, String password)
-    # void enableUser(Student student)
-    # void disableUser(Student student)
+    + void printUser()
 }
 
 class Student {
-    + boolean enabled
-    + Status status
-    - final Date dateCreated
+    - boolean enabled
+    - Status status
+    - Borrowing borrow
 
     + Student(String name, int age, String username, String password)
     + Student(String name, int age, String username, String password, Status status)
     - Student(Status status, Date dateCreated, String name, int age, String username, String password)
 
-
+    + boolean isEnabled()
+    + void setEnabled(boolean enabled)
+    + Status getStatus()
+    + void setStatus(Status status)
+    + Borrowing getBorrow()
     + Date getDateCreated()
-    + void browseBooks()
+
+    + boolean isBorrowing()
+    + void createBorrowing()
+    + void removeBorrowing()
+    + void returnBooks()
+    + void checkout()
+    + void printUser()
 }
 
 enum Status {
@@ -48,25 +68,61 @@ enum Status {
 }
 
 class Borrowing {
-    # int id
-    + Book[] books
-    + Student borrower
-    + Date dateBorrowed
-    + Date dateDue
+    + static final List<Borrowing> transactions
+    - static final int maxBooks
+    - static int count;
 
-    + Borrowing()
+    - int id
+    - List<Book> books
+    - Student borrower
+    - Calendar dateBorrowed
+    - Calendar dateDue
+    - Calendar dateReturned
+    - Boolean returned
 
-    + void update()
+    + void setReturned()
+    + boolean isReturned()
+    + int getId()
+    + List<Book> getBooks()
+    + Student getBorrower()
+    + Calendar getDateBorrowed()
+    + Calendar getDateDue()
+    + Calendar getDateReturned()
+
+    + Borrowing(Student borrower)
+    + void printBorrowedBooks()
+    + void printBorrowedBookTitles()
+    + void printBorrowingInfo()
+
+    + boolean isBooksEmpty()
+    + boolean isBooksFull()
+    + boolean containsBook(Book bookCompare)
+    + boolean addBook(Book book)
+    + boolean removeBook(Book book)
+    + void clearAllBooks()
+
+    + static void printAllTransactions()
 }
 
 class Book {
-    # int id
-    + Stromg title
-    + String details
-    + String publisher
+    + static final Map<String, Book> map
+    - static int count
 
-    + void add()
-    + void update()
+    - int id
+    - String title
+    - String details
+    - String publisher
+
+    + Book(String title, String details, String publisher)
+
+    + int getId()
+    + String getTitle()
+    + String getDetails()
+    + String getPublisher()
+
+    + void printBook()
+
+    + static printAllBooks()
 }
 
 User <|-- Student
@@ -74,7 +130,7 @@ User <|-- Librarian
 Student *-- Status
 Student *-- Borrowing
 Borrowing -- Librarian
-Borrowing o-- Book
+Borrowing -- Book
 Librarian -- Student
 Book -- Librarian
 

@@ -208,10 +208,21 @@ public class Main {
                 studentBorrowMenu(student);
                 break;
             case 3: // Return books
-                // TODO
+                if (!student.isBorrowing()) {
+                    System.out.println("You are not borrowing any books!");
+                    break;
+                }
 
-            case 4: // Check
+                student.returnBooks();
+                break;
+            case 4: // Check Current Borrow
+                if (!student.isBorrowing()) {
+                    System.out.println("You are not borrowing any books!");
+                    break;
+                }
 
+                student.getBorrow().printBorrowingInfo();   //Prints current transactions made by the user
+                break;
             case 5: // logout
                 return;
             default: // wrong input
@@ -220,5 +231,137 @@ public class Main {
         }
 
     studentUserMenu(student);
+    }
+
+    public static void studentBorrowMenu(Student student){
+        student.createBorrowing(); // initialize student.borrow
+        String title;
+        Book book;
+
+        int choice = validateIntInput("(Add Book: 1, Remove Book: 2, View Cart: 3, Clear Cart: 4, Checkout: 5, Backout: 6)\nEnter choice: ");
+        switch(choice){
+            case 1: //Add
+                // check if cart is full
+                if (student.getBorrow().isBooksFull()) {
+                    System.out.println("Your cart is already full!");
+                    break;
+                }
+
+                // ask user the book they want added to cart
+                student.getBorrow().printBorrowedBooks();
+                title = getInput("Enter book title: ");
+                book = Book.map.get(title);
+                book.printBook();
+                if (book == null) {
+                    System.out.printf("Could not find \"%s\".\n", title);
+                    break;
+                }
+
+                Boolean isAdded = student.getBorrow().addBook(book); // attempt to add book
+                if (isAdded) {
+                    System.out.printf("\"%s\" was added succesfully!\n", title);
+                } else {
+                    System.out.printf("\"%s\" was already added to the cart!\n", title);
+                }
+                break;
+            case 2: // remove
+                // check if cart is empty
+                if (student.getBorrow().isBooksEmpty()) {
+                    System.out.println("Your cart is already empty!");
+                    break;
+                }
+                // ask user the book they want removed from cart
+                student.getBorrow().printBorrowedBooks();
+                title = getInput("Enter book title: ");
+                book = Book.map.get(title);
+                if (book == null) {
+                    System.out.printf("Could not find \"%s\".\n", title);
+                    break;
+                }
+
+                Boolean isRemoved = student.getBorrow().removeBook(book); // attempt to remove book
+                if (isRemoved) {
+                    System.out.printf("\"%s\" was removed succesfully!\n", title);
+                } else {
+                    System.out.printf("\"%s\" was not in your cart!\n", title);
+                }
+                break;
+            case 3: // View cart
+                student.getBorrow().printBorrowedBookTitles();
+                break;
+            case 4: // Clear cart
+                student.getBorrow().clearAllBooks();
+                System.out.println("Cart is cleared!");
+                break;
+            case 5: // Checkout
+                // check if there are no books
+                if (student.getBorrow().isBooksEmpty()) {
+                    System.out.println("You cannot checkout 0 books!");
+                    break;
+                }
+
+                System.out.println("Check out was succesful!");
+                student.checkout(); // adds borrow to global transactions
+                return;
+            case 6: // backout
+                student.removeBorrowing(); // makes student.borrow null
+                return;
+            default: // wrong input
+                System.out.println("Please enter a valid choice!");
+                break;
+        }
+
+        studentBorrowMenu(student);
+    }
+
+    // -- Functions to grab and validate input --
+
+    // Validate that the name contains no numbers
+    public static String validateNameInput(String msg) {
+        String in = getInput(msg);
+
+        if (in.matches(".*\\d.*")){
+            System.out.println("Names should not contain a number!");
+            return validateNameInput(msg);
+        }
+
+        return in;
+    }
+
+    // Validate that the inputted username doesn't already exist
+    public static String validateUsernameInput(String msg) {
+        String username = getInput(msg);
+
+        if (User.doesUsernameExist(username)) {
+            System.out.printf("%s already exists!");
+            return validateUsernameInput(msg);
+        }
+        return username;
+    }
+
+    public static boolean validateBooleanInput() {
+        String in = getInput("(True or False)\nEnter choice: ");
+
+        if ("TRUE".equalsIgnoreCase(in)) return true;
+        else if ("FALSE".equalsIgnoreCase(in)) return false;
+
+        System.out.println("Incorrect input!");
+        return validateBooleanInput();
+    }
+
+    public static int validateIntInput(String msg) {
+        String in = getInput(msg);
+
+        try {
+            return Integer.parseInt(in);
+        } catch(Exception e) {
+            System.out.printf("%s is not an integer!\n", in);
+            return validateIntInput(msg);
+        }
+    }
+
+    public static String getInput(String msg) {
+        System.out.print(msg);
+        return input.nextLine();
     }
 }

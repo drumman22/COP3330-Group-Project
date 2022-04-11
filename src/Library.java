@@ -17,11 +17,11 @@ abstract class User {
     private static int count = 0;
     protected int id;
 
-    private String name;
-    private int age;
+    protected String name;
+    protected int age;
     protected String username;
     protected String password;
-    private final Calendar dateCreated; // date account was created
+    protected final Calendar dateCreated; // date account was created
 
     protected User(String name, int age, String username, String password) {
         this.id = count++; // increment global count
@@ -83,30 +83,16 @@ abstract class User {
 }
 
 class Librarian extends User {
-    // public String department;
-
     public Librarian(String name, int age, String username, String password) {
         super(name, age, username, password);
-    }
-
-    public Student getStudents() {
-        return null;
-    }
-
-    protected void enableUser(Student student) {
-
-    }
-
-    protected void disableUser(Student student) {
-
     }
 
     @Override
     public void printUser() {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         System.out.printf("Librarian Account: %s (ID %d), Created on %s\nName: %s, Age: %d\n",
-                this.getUsername(), this.getId(), formatter.format(this.getDateCreated().getTime()),
-                this.getName(), this.getAge());
+                getUsername(), getId(), formatter.format(getDateCreated().getTime()),
+                getName(), getAge());
     }
 }
 
@@ -172,17 +158,18 @@ class Student extends User {
 
     public boolean isBorrowing() { return getBorrow() != null; }
 
-    public Borrowing createBorrowing() {
-        if (isBorrowing()) {
-            return null;
-        }
-
+    public void createBorrowing() {
+        if (isBorrowing()) return;
         borrow = new Borrowing(this);
-        return borrow;
     }
 
     public void removeBorrowing() {
         borrow = null;
+    }
+
+    public void returnBooks() {
+        borrow.setReturned(true);
+        removeBorrowing();
     }
 
     // add borrowing to global transactions list
@@ -190,31 +177,27 @@ class Student extends User {
         Borrowing.transactions.add(getBorrow());
     }
 
-    public void returnBooks() {
-        borrow.setReturned(false);
-        borrow = null;
-    }
-
     @Override
     public void printUser() {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         System.out.printf("Student Account: %s (ID %d), Created on %s\nName: %s, Age: %d\nStatus: %s, Account Enabled: %s\n",
-                this.getUsername(), this.getId(), formatter.format(this.getDateCreated().getTime()),
-                this.getName(), this.getAge(),
-                this.getStatus().toString(), this.isEnabled());
+                getUsername(), getId(), formatter.format(getDateCreated().getTime()),
+                getName(), getAge(),
+                status.toString(), enabled);
     }
 }
 
 class Borrowing {
     public static final List<Borrowing> transactions = new ArrayList<>();
     private static final int maxBooks = 3;
-    private static int count = 0;
-    public int id;
 
-    public List<Book> books = new LinkedList<>(); // 0..3 books
-    public Student borrower;
-    public Calendar dateBorrowed;
-    public Calendar dateDue;
+    private static int count = 0;
+    private int id;
+
+    private List<Book> books = new LinkedList<>(); // 0..3 books
+    private Student borrower;
+    private Calendar dateBorrowed;
+    private Calendar dateDue;
     private Calendar dateReturned;
     private Boolean returned;
 
@@ -229,6 +212,47 @@ class Borrowing {
         this.returned = false;
     }
 
+    // Setters
+    public void setReturned(Boolean bool) {
+        if (Boolean.TRUE.equals(bool)) {
+            returned = true;
+            dateReturned = Calendar.getInstance();
+        } else {
+            returned = false;
+            dateReturned = null;
+        }
+    }
+
+    // Getters
+    public boolean isReturned() {
+        return returned;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public List<Book> getBooks() {
+        return books;
+    }
+
+    public Student getBorrower() {
+        return borrower;
+    }
+
+    public Calendar getDateBorrowed() {
+        return dateBorrowed;
+    }
+
+    public Calendar getDateDue() {
+        return dateDue;
+    }
+
+    public Calendar getDateReturned() {
+        return dateReturned;
+    }
+
+    // Methods
     public void printBorrowedBooks() {
         for (Book book : books) {
             if (book != null) book.printBook();
@@ -246,40 +270,20 @@ class Borrowing {
         }
     }
 
-    public void printBorrowing() {
-        System.out.printf("==Transaction %d==\n--User Info--\n", id);
+    public void printBorrowingInfo() {
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Boolean isOverdue = dateReturned.after(dateDue);
+
+        System.out.printf("==Transaction %d==\n", id);
+        System.out.printf("Date Borrowed: %s, Date Due: %s\nDate Returned: %s, Overdue: %s",
+                formatter.format(dateBorrowed.getTime()), formatter.format(dateDue.getTime()),
+                formatter.format(dateReturned.getTime()), isOverdue);
+
+        System.out.println("--User Info--");
         borrower.printUser();
         System.out.println("--Borrowed Books--");
         printBorrowedBooks();
         System.out.println();
-    }
-
-    public static void printAllTransactions() {
-        if (transactions.isEmpty()) {
-            System.out.println("There are no transactions!\n");
-        }
-
-        System.out.println("\n==ALL TRANSACTIONS==");
-        for (Borrowing trx : transactions) {
-            trx.printBorrowing();
-            System.out.println();
-        }
-        System.out.println();
-    }
-
-    //
-    public boolean isReturned() {
-        return returned;
-    }
-
-    public void setReturned(Boolean bool) {
-        if (Boolean.TRUE.equals(bool)) {
-            returned = true;
-            dateReturned = Calendar.getInstance();
-        } else {
-            returned = false;
-            dateReturned = null;
-        }
     }
 
     public boolean isBooksEmpty() {
@@ -308,6 +312,20 @@ class Borrowing {
     public void clearAllBooks() {
         books.clear();
     }
+
+    // static method
+    public static void printAllTransactions() {
+        if (transactions.isEmpty()) {
+            System.out.println("There are no transactions!\n");
+        }
+
+        System.out.println("\n==ALL TRANSACTIONS==");
+        for (Borrowing trx : transactions) {
+            trx.printBorrowingInfo();
+            System.out.println();
+        }
+        System.out.println();
+    }
 }
 
 class Book {
@@ -330,20 +348,7 @@ class Book {
         map.put(title, this);
     }
 
-    public void printBook() {
-        System.out.printf("\"%s\" (ID %s)\nPublisher: %s\nDetails: %s\n",
-                getTitle(), getId(), getPublisher(), getDetails());
-    }
-
-    // static method
-    public static void printAllBooks() {
-        System.out.println("\n--ALL BOOKS--");
-        for (Book book : Book.map.values()) {
-            book.printBook();
-        }
-        System.out.println();
-    }
-
+    // Getters
     public int getId() {
         return id;
     }
@@ -358,5 +363,19 @@ class Book {
 
     public String getPublisher() {
         return publisher;
+    }
+
+    public void printBook() {
+        System.out.printf("\"%s\" (ID %s)\nPublisher: %s\nDetails: %s\n",
+                title, id, publisher, details);
+    }
+
+    // static method
+    public static void printAllBooks() {
+        System.out.println("\n--ALL BOOKS--");
+        for (Book book : Book.map.values()) {
+            book.printBook();
+        }
+        System.out.println();
     }
 }
