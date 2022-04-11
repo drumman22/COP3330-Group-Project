@@ -390,4 +390,8 @@ class Book {
     public static Book getBook(String title) {
         return map.get(title.toUpperCase());
     }
+
+    public static Book removeBook(String title) {
+        return map.remove(title.toUpperCase());
+    }
 }

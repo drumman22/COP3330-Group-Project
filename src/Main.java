@@ -74,7 +74,7 @@ public class Main {
         System.out.print("Enter a name: ");
         String name = input.nextLine();
         int age = validateIntInput("Enter your age: ");
-        Student.Status status = Student.Status.fromInteger(validateIntInput("(Freshman: 1, Sophmore: 2, Junior: 3, Senior: 4, Graduate: 5)\nWhat is your Student Status: "));
+        Student.Status status = Student.Status.fromInteger(validateIntInput("(Freshman: 1, Sophomore: 2, Junior: 3, Senior: 4, Graduate: 5)\nWhat is your Student Status: "));
 
         // check if users already exist?
         // check if username is not used
@@ -96,7 +96,7 @@ public class Main {
         if (user != null && user.loginBool(username, password))
             return user;
 
-        // if none validate login then run loginmenu again
+        // if none validate login then run login menu again
         System.out.println("Incorrect username or password!");
         return loginMenu();
     }
@@ -132,7 +132,7 @@ public class Main {
                     System.out.printf("Could not find \"%s\".\n", title);
                 }
 
-                book.map.remove(title);
+                Book.removeBook(title);
                 System.out.printf("\"%s\" was successfully removed!\n", title);
             case 6: // logout
                 return;
@@ -170,7 +170,7 @@ public class Main {
                 student.setAge(validateIntInput("Enter age: "));
                 break;
             case 3: // update status
-                student.setStatus(Student.Status.fromInteger(validateIntInput("(Freshman: 1, Sophmore: 2, Junior: 3, Senior: 4, Graduate: 5)\nWhat is your Student Status: ")));
+                student.setStatus(Student.Status.fromInteger(validateIntInput("(Freshman: 1, Sophomore: 2, Junior: 3, Senior: 4, Graduate: 5)\nWhat is your Student Status: ")));
                 break;
             case 4: // change enable
                 student.setEnabled(validateBooleanInput());
@@ -209,9 +209,9 @@ public class Main {
                     break;
                 }
 
-                System.out.printf("You are %soverdue!\n", student.getBorrow().isOverdue() ? "" : "not ");
+                System.out.printf("You are %s" + "overdue!\n", student.getBorrow().isOverdue() ? "" : "not ");
                 student.returnBooks();
-                System.out.println("Succefully returned books!");
+                System.out.println("Successfully returned books!");
                 break;
             case 4: // Check Current Borrow
                 if (!student.isBorrowing()) {
@@ -256,7 +256,7 @@ public class Main {
 
                 Boolean isAdded = student.getBorrow().addBook(book); // attempt to add book
                 if (isAdded) {
-                    System.out.printf("\"%s\" was added succesfully!\n", title);
+                    System.out.printf("\"%s\" was added successfully!\n", title);
                 } else {
                     System.out.printf("\"%s\" was already added to the cart!\n", title);
                 }
@@ -278,7 +278,7 @@ public class Main {
 
                 Boolean isRemoved = student.getBorrow().removeBook(book); // attempt to remove book
                 if (isRemoved) {
-                    System.out.printf("\"%s\" was removed succesfully!\n", title);
+                    System.out.printf("\"%s\" was removed successfully!\n", title);
                 } else {
                     System.out.printf("\"%s\" was not in your cart!\n", title);
                 }
@@ -297,7 +297,7 @@ public class Main {
                     break;
                 }
 
-                System.out.println("Check out was succesful!");
+                System.out.println("Check out was successful!");
                 student.checkout(); // adds borrow to global transactions
                 return;
             case 6: // backout
